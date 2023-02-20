@@ -1,3 +1,5 @@
+import matplotlib.pyplot as plt
+
 #Lista com todas as informações
 data = list()
 
@@ -109,7 +111,7 @@ def sick_by_col() -> dict:
        
         #Se chegar aqui significa que saiu do nivel e atualiza para o novo
         else:
-            res[(i,j)] = (aux_sick,aux_total) #Valores do ultimo nivel            
+            res[(i,j)] = (aux_sick,aux_total) #Valores do ultimo nivel         
             aux_sick = 0 
             aux_total = 0
             i += 10
@@ -124,24 +126,52 @@ def table_print(d : dict) -> None:
     total = len(data) #Para o total de pacientes
     table = str() #Tabela que será impressa
 
+    #Categorias da tabela
     table += 'Categoria | Quantidade | % Amostra | % Total\n'
 
     for key, (sick,ref_total) in d.items():
         if ref_total > 0:
+            #Calcula a porcentagem
             auxref   = (sick / ref_total) * 100
             auxtotal = (sick / total) * 100
 
+            #Coloca no formato da tabela
             auxtable = f'{key} | {sick} | {auxref: 0.2f} | {auxtotal: 0.2f}\n'
             table += auxtable
 
     print(table)
 
-
 read_csv('myheart.csv')
 
+gender = sick_by_gender()
+age = sick_by_age()
+col = sick_by_col()
+
 print('Por sexo\n')
-table_print(sick_by_gender())
+table_print(gender)
+
 print('Por idade\n')
-table_print(sick_by_age())
+table_print(age)
+
 print('Por colesterol\n')
-table_print(sick_by_col())
+table_print(col)
+
+#----------------------EXTRA----------------------#
+#Função para plotar o grafo
+def graph(d: dict, name: str, cor: str) -> None:
+    xaxis = [str(i) for i  in d.keys()]
+    yaxis = [j[0] for j in d.values()]
+
+    plt.figure(figsize=(50, 50))
+
+    plt.bar(xaxis,yaxis, color = cor)
+
+    if len(xaxis) > 20 :
+        plt.tick_params(axis="x", rotation=90, labelsize=7)
+
+    plt.title(name)
+    plt.show()
+
+graph(gender, 'Sexo', 'orange')
+graph(age,'Idade', 'red')
+graph(col, 'Colesterol', 'green')
